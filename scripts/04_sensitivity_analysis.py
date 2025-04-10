@@ -42,3 +42,23 @@ def main():
             "final_coop_fraction_mean": np.mean(final_coop_fracs),
             "final_payoff_mean": np.mean(final_payoffs)
         })
+    sensitivity_df = pd.DataFrame(results_list)
+    os.makedirs("outputs", exist_ok=True)
+    sensitivity_df.to_csv("outputs/sensitivity_analysis.csv", index=False)
+    
+    # Create sensitivity plot: final resource vs defector_multiplier for each (ic, mr) combination.
+    for ic in initial_coop_fractions:
+        plt.figure()
+        subset = sensitivity_df[sensitivity_df["initial_coop_fraction"] == ic]
+        for mr in mutation_rates:
+            sub2 = subset[subset["mutation_rate"] == mr]
+            plt.plot(sub2["defector_multiplier"], sub2["final_resource_mean"], marker='o', label=f"Mutation {mr}")
+        plt.xlabel("Defector Consumption Multiplier")
+        plt.ylabel("Final Resource (Mean)")
+        plt.title(f"Sensitivity Analysis (Initial Coop Fraction = {ic})")
+        plt.legend()
+        plt.savefig(f"outputs/sensitivity_ic_{ic}.png")
+        plt.close()
+
+if __name__ == '__main__':
+    main()
