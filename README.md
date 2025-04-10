@@ -13,10 +13,7 @@ Let the system have:
 - Carrying capacity: $K$
 
 Each agent $i$ consumes:
-$$C_i(t) = \begin{cases}
-  c & \text{if } i \text{ is a cooperator} \\
-  k \cdot c & \text{if } i \text{ is a defector}
-\end{cases}$$
+$$C_i(t) = \begin{cases}c & \text{if } i \text{ is a cooperator} \\k \cdot c & \text{if } i \text{ is a defector}\end{cases}$$
 
 The total planned consumption at generation $t$ is:
 $$C_{\text{total}}(t) = c \cdot f_t N + k c \cdot (1 - f_t) N$$
