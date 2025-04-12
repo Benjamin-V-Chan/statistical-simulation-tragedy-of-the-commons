@@ -1,73 +1,85 @@
-# Tragedy of the Commons: Evolutionary Statistical Simulation
+# statistical-simulation-tragedy-of-the-commons
+
+## Project Overview
+
+This project models the **Tragedy of the Commons** through an **evolutionary game-theoretic simulation**, incorporating elements from population dynamics, agent-based modeling, and nonlinear differential equations. The simulation involves agents that act as either **cooperators** or **defectors**, each consuming a shared, regenerating resource. Evolutionary pressure drives agents to adapt strategies over time based on fitness (payoff), introducing emergent behaviors and dynamic equilibria.
 
 ### Mathematical Foundations
 
-Let the system have:
-- Total population size: `$N`  
-- Generation index: `$t \in \{0, 1, \dots, T\}`  
-- Fraction of cooperators at time `$t$`: `$f_t`  
-- Resource pool at time `$t$`: `$R_t`  
-- Cooperator consumption: `$c`  
-- Defector consumption: `$c_d = k \cdot c$`, where `$k > 1`  
-- Regeneration rate: `$r`  
-- Carrying capacity: `$K`  
+Let the system be defined as follows:
 
-Each agent `$i$` consumes:
+- Total population size: $N$
+- Generation index: $t \in \{0, 1, \dots, T\}$
+- Fraction of cooperators at generation $t$: $f_t$
+- Resource pool at generation $t$: $R_t$
+- Cooperator consumption: $c$
+- Defector consumption: $c_d = k \cdot c$ where $k > 1$
+- Regeneration rate of the resource: $r$
+- Carrying capacity of the resource pool: $K$
+- Mutation probability: $\mu$
 
-```
-C_i(t) = {
-  c         if i is a cooperator
-  k * c     if i is a defector
-}
-```
+#### Consumption and Payoff
 
-The total planned consumption at generation `$t$` is:
+Each agent $i$ has a consumption at generation $t$ defined by:
 
-`C_total(t) = c * f_t * N + k * c * (1 - f_t) * N`
+$$C_i(t) = \begin{cases}
+  c & \text{if agent } i \text{ is a cooperator} \\
+  k \cdot c & \text{if agent } i \text{ is a defector}
+\end{cases}$$
 
-If `C_total(t) > R_t`, consumption is scaled:
+Total planned consumption:
 
-`scale_t = R_t / C_total(t)`, where `scale_t ∈ (0,1)`
+$$C_{\text{total}}(t) = N [c \cdot f_t + k \cdot c \cdot (1 - f_t)]$$
 
-Then the **actual payoff** `$P_i(t)$` per agent is:
+If $C_{\text{total}}(t) > R_t$, each agent's consumption is scaled by a factor:
 
-`P_i(t) = C_i(t) * scale_t`
+$$\alpha_t = \frac{R_t}{C_{\text{total}}(t)}$$
 
-Reproduction is probabilistic and proportional to `$P_i(t)$`.
+Actual consumption becomes $\alpha_t C_i(t)$ and the payoff $P_i(t)$ is equal to actual consumption.
 
-The **resource regeneration** follows logistic dynamics:
+#### Resource Regeneration
 
-`R_{t+1} = R_t + r * R_t * (1 - R_t / K) - C_actual(t)`
+The resource evolves following a **logistic growth model** with harvesting:
 
-After reproduction, agents can mutate with probability `$\mu$`, flipping from cooperator to defector or vice versa.
+$$R_{t+1} = R_t + r R_t \left(1 - \frac{R_t}{K}\right) - C_{\text{actual}}(t)$$
 
-This leads to a stochastic system where:
-- Cooperators may die out due to exploitation.
-- Resource depletion triggers selection pressure.
-- Mutation introduces dynamic equilibrium around cooperation-defection balances.
+Where:
+- $r R_t (1 - R_t/K)$ is the natural logistic growth
+- $C_{\text{actual}}(t)$ is total actual consumption of the population
 
-We analyze the equilibria and stability of `$f_t$` and `$R_t$` over time. In particular, we are interested in fixed points `$f^*, R^*$` such that:
+#### Evolutionary Dynamics
 
-`f_{t+1} = f_t` ⇒ `$f^*$` is an evolutionary stable strategy (ESS).
+A new generation is formed via stochastic reproduction proportional to agent payoff:
 
-We observe that depending on `$k$`, `$\mu$`, and `$r$`, the system can:
-- Collapse to `$f^* = 0$` (all defectors)
-- Stabilize at `$f^* \in (0,1)$`
-- Sustain cycles or chaotic fluctuations
+- Probability of selection for agent $i$: $p_i = \frac{P_i(t)}{\sum_j P_j(t)}$
+- With probability $\mu$, an agent's strategy mutates (cooperator ↔ defector)
+
+Over time, this results in evolutionary pressures shifting the population distribution of cooperators vs. defectors depending on environmental feedback.
+
+---
 
 ## Folder Structure
 
 ```
 project-root/
 ├── scripts/
-│   ├── utils.py                     # Core simulation logic
-│   ├── 01_simulation.py            # Run simulation replicates
-│   ├── 02_data_analysis.py         # Analyze results and compute stats
-│   ├── 03_visualization.py         # Plot time series and correlations
-│   └── 04_sensitivity_analysis.py  # Run multi-param sensitivity tests
-├── outputs/                        # Contains all generated CSVs and plots
-└── requirements.txt                # Required Python libraries
+│   ├── utils.py                   # Core simulation function
+│   ├── 01_simulation.py          # Run simulation and save results
+│   ├── 02_data_analysis.py       # Analyze final outcomes across replicates
+│   ├── 03_visualization.py       # Visualize trends and outcome distributions
+│   └── 04_sensitivity_analysis.py# Run parameter sweep and sensitivity analysis
+├── outputs/
+│   ├── simulation_results.csv    # Main simulation data output
+│   ├── analysis_summary.csv      # Summary statistics
+│   ├── analysis_correlation.csv  # Correlation results
+│   ├── avg_resource_timeseries.png
+│   ├── avg_cooperation_timeseries.png
+│   └── sensitivity_ic_*.png      # Sensitivity plots
+├── requirements.txt              # Python dependencies
+└── README.md                     # Project documentation
 ```
+
+---
 
 ## Usage
 
@@ -81,43 +93,47 @@ Install required dependencies using the requirements.txt file.
 pip install -r requirements.txt
 ```
 
-### 2. Run Simulation (default parameters, multiple replicates):
+### 2. Run the Main Simulation:
 
 ```bash
 python scripts/01_simulation.py
 ```
+This will run multiple replicates of the simulation and save the results to `outputs/simulation_results.csv`.
 
-### 3. Analyze Simulation Results:
+### 3. Analyze the Simulation Results:
 
 ```bash
 python scripts/02_data_analysis.py
 ```
+This script generates summary statistics and correlation results for final population metrics.
 
 ### 4. Generate Visualizations:
 
 ```bash
 python scripts/03_visualization.py
 ```
+This will create time series plots and a scatterplot of resource vs. cooperation in the final generation.
 
 ### 5. Perform Sensitivity Analysis:
 
 ```bash
 python scripts/04_sensitivity_analysis.py
 ```
+This performs a grid search over initial cooperation, defector greed, and mutation rate, then saves both CSV data and plots for result interpretation.
+
+---
 
 ## Requirements
 
-The project requires the following Python packages:
+Install all required libraries via:
+```bash
+pip install -r requirements.txt
+```
 
+**requirements.txt** should include:
 ```
 numpy
 pandas
 matplotlib
 scipy
-```
-
-These are listed in `requirements.txt`. Install them using pip:
-
-```bash
-pip install -r requirements.txt
 ```
