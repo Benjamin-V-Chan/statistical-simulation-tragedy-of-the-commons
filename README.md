@@ -13,20 +13,26 @@ Let the system have:
 - Carrying capacity: $K$
 
 Each agent $i$ consumes:
-$$C_i(t) = \begin{cases}c & \text{if } i \text{ is a cooperator} \\k \cdot c & \text{if } i \text{ is a defector}\end{cases}$$
+
+$$C_i(t) = \begin{cases}c & \text{if } i \text{ is a cooperator} \\
+k \cdot c & \text{if } i \text{ is a defector}\end{cases}$$
 
 The total planned consumption at generation $t$ is:
+
 $$C_{\text{total}}(t) = c \cdot f_t N + k c \cdot (1 - f_t) N$$
 
 If $C_{\text{total}}(t) > R_t$, consumption is scaled:
+
 $$\text{scale}_t = \frac{R_t}{C_{\text{total}}(t)} \in (0,1)$$
 
 Then the **actual payoff** $P_i(t)$ per agent is:
-$$P_i(t) = C_i(t) \cdot \text{scale}_t$$
+
+$$P_i(t) = C_i(t) \cdot \text{scale}_t
 
 Reproduction is probabilistic and proportional to $P_i(t)$.
 
 The **resource regeneration** follows logistic dynamics:
+
 $$R_{t+1} = R_t + r R_t \left(1 - \frac{R_t}{K}\right) - C_{\text{actual}}(t)$$
 
 After reproduction, agents can mutate with probability $\mu$, flipping from cooperator to defector or vice versa.
@@ -37,6 +43,7 @@ This leads to a stochastic system where:
 - Mutation introduces dynamic equilibrium around cooperation-defection balances.
 
 We analyze the equilibria and stability of $f_t$ and $R_t$ over time. In particular, we are interested in fixed points $f^*, R^*$ such that:
+
 $$f_{t+1} = f_t \Rightarrow f^* \text{ is an evolutionary stable strategy (ESS)}$$
 
 We observe that depending on $k$, $\mu$, and $r$, the system can:
@@ -98,7 +105,7 @@ python scripts/04_sensitivity_analysis.py
 
 The project requires the following Python packages:
 
-```text
+```
 numpy
 pandas
 matplotlib
