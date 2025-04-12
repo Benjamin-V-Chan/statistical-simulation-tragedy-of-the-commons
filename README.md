@@ -27,7 +27,7 @@ $$\text{scale}_t = \frac{R_t}{C_{\text{total}}(t)} \in (0,1)$$
 
 Then the **actual payoff** $P_i(t)$ per agent is:
 
-$$P_i(t) = C_i(t) \cdot \text{scale}_t
+$$P_i(t) = C_i(t) \cdot \text{scale}_t$$
 
 Reproduction is probabilistic and proportional to $P_i(t)$.
 
